@@ -3,22 +3,33 @@ import requests
 import bs4
 import re
 
+
+headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0' }
+
 def addToFile(filename, line):
 	f=open(filename, "a+")
 	f.write(line)
 
 def appendLyrics(url, filename):
 	print(url)
-	pattern = re.compile(r'\s+')
+	pattern = re.compile(r'\s+' or r'\w' or r'(')
 	url = re.sub(pattern, '', url).lower()
+
+	rep = {"\'":"", "(":"", ")":"", "p.m.":"pm", "a.m.":"am"}
+	rep = dict((re.escape(k), v) for k, v in rep.items())
+	pattern = re.compile("|".join(rep.keys()))
+	url = pattern.sub(lambda m: rep[re.escape(m.group(0))], url)
+
+
+	url = url.replace("\'","")
 	print(url)
-	request = requests.get(url)
+	request = requests.get(url, headers=headers)
 	for line in bs4.BeautifulSoup(request.text, "html.parser").find_all("div", {"class":""}):
 		print(line.text)
 		addToFile(filename, line.text)
 
 def getSongs(url):
-	request = requests.get(url)
+	request = requests.get(url, headers=headers)
 	songs=[]
 	#get each song
 	for line in bs4.BeautifulSoup(request.text, "html.parser").find_all("a", {"target": "_blank"}):
@@ -42,7 +53,7 @@ def main():
 	songs = getSongs(songlist)	
 
 	#add lyrics of each song to the file
-	for song in songs[1:10]:
+	for song in songs[0:10]:
 		print(song)
 		lyricsUrl = "http://www.azlyrics.com/lyrics/%s/%s.html" % (args.artist, song)
 		appendLyrics(lyricsUrl, args.file)
