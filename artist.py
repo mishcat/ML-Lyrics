@@ -2,6 +2,7 @@ import argparse
 import requests
 import bs4
 import re
+import time
 
 
 headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0' }
@@ -27,6 +28,7 @@ def appendLyrics(url, filename):
 	for line in bs4.BeautifulSoup(request.text, "html.parser").find_all("div", {"class":""}):
 		print(line.text)
 		addToFile(filename, line.text)
+		time.sleep(random.random() * 0.8)
 
 def getSongs(url):
 	request = requests.get(url, headers=headers)
