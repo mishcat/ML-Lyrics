@@ -3,15 +3,19 @@ import requests
 import bs4
 import re
 import time
+from urllib.request import Request, urlopen
+from fake_useragent import UserAgent
+import random
+import numpy
 
-
-headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0' }
 
 def addToFile(filename, line):
 	f=open(filename, "a+")
 	f.write(line)
 
 def appendLyrics(url, filename):
+	ua=UserAgent()
+	headers = {'User-Agent':str(ua.random)}
 	print(url)
 	pattern = re.compile(r'\s+' or r'\w' or r'(')
 	url = re.sub(pattern, '', url).lower()
@@ -31,6 +35,8 @@ def appendLyrics(url, filename):
 		time.sleep(random.random() * 0.8)
 
 def getSongs(url):
+	ua=UserAgent()
+	headers = {'User-Agent':str(ua.random)}
 	request = requests.get(url, headers=headers)
 	songs=[]
 	#get each song
@@ -55,7 +61,8 @@ def main():
 	songs = getSongs(songlist)	
 
 	#add lyrics of each song to the file
-	for song in songs[0:10]:
+	songs=numpy.random.choice(songs, 15, replace=False)
+	for song in songs:
 		print(song)
 		lyricsUrl = "http://www.azlyrics.com/lyrics/%s/%s.html" % (args.artist, song)
 		appendLyrics(lyricsUrl, args.file)
