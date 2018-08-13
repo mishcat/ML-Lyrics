@@ -75,5 +75,12 @@ def main():
 	model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 
+	#train model 
+	for iteration in range(1, 5):
+	    model.fit(x=X, y=y, batch_size=100, nb_epoch=10)
+
+
+
+
 if __name__ == '__main__':
     main()	
