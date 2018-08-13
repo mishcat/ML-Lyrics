@@ -1,10 +1,8 @@
 import argparse 
 import numpy as np
 import random 
-import sys
 from keras.models import Sequential
-from keras.layers import Dense, Activation, Dropout
-from keras.layers import LSTM
+from keras.layers import LSTM, Dense, Activation, Dropout
 from keras.optimizers import RMSprop
 
 
@@ -72,6 +70,9 @@ def main():
 	model.add(LSTM(128, input_shape=(seq_length, chars_len)))
 	model.add(Dropout(0.5))
 	model.add(Dense(chars_len, activation='softmax'))
+
+	optimizer = RMSprop(lr=0.01)
+	model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 
 if __name__ == '__main__':
