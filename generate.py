@@ -60,11 +60,19 @@ def main():
 	    	#t is 0->seq_length
 	    	#for each case, 1 assigned to the chars that appear in the substring with length seq_length
 	    	X[i, j, char_to_int[char]] = 1
+	    #next char that follows substring in lyrics file
 	    y[i, char_to_int[next_chars[i]]] = 1
 
 
-	print(X[1600][19][1])
+	# print(X[1600][19][1])
 	# print(y)
+
+	#sequence classficiation with lstm 
+	model = Sequential()
+	model.add(LSTM(128, input_shape=(seq_length, chars_len)))
+	model.add(Dropout(0.5))
+	model.add(Dense(chars_len, activation='softmax'))
+
 
 if __name__ == '__main__':
     main()	
