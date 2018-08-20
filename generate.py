@@ -4,16 +4,8 @@ import random
 from keras.models import Sequential
 from keras.layers import LSTM, Dense, Activation, Dropout
 from keras.optimizers import RMSprop
+import sys
 
-
-def sample(preds, temperature):
-    # helper function to sample an index from a probability array
-    preds = np.asarray(preds).astype('float64')
-    preds = np.log(preds) / temperature
-    exp_preds = np.exp(preds)
-    preds = exp_preds / np.sum(exp_preds)
-    probas = np.random.multinomial(1, preds, 1)
-    return np.argmax(probas)
 
 
 def main():
@@ -78,6 +70,39 @@ def main():
 	#train model 
 	for iteration in range(1, 5):
 	    model.fit(x=X, y=y, batch_size=100, nb_epoch=10)
+
+
+	    start = random.randint(0, len(lyrics_chars) - seq_length- 1)
+
+	    sentence = lyric_chars[start: start + seq_length]
+
+	    #get next char using model.predict
+	    for i in range(1000):
+	        x = np.zeros((1, seq_length, chars_len))
+	        for t, char in enumerate(sentence):
+	            x[0, t, char_to_int[char]] = 1.
+
+	        pred = model.predict(x, verbose=0)[0]
+	        next_index = sample(pred, 0.5)
+	        next_char = int_to_char[next_index]
+
+	        sentence = sentence[1:] + next_char
+
+	        sys.stdout.write(next_char)
+	        sys.stdout.flush()
+
+	    print("next epoch")
+
+
+def sample(preds, temperature):
+	# https://github.com/llSourcell/keras_explained/blob/master/gentext.py
+    # helper function to sample an index from a probability array
+    preds = np.asarray(preds).astype('float64')
+    preds = np.log(preds) / temperature
+    exp_preds = np.exp(preds)
+    preds = exp_preds / np.sum(exp_preds)
+    probas = np.random.multinomial(1, preds, 1)
+    return np.argmax(probas)
 
 
 
